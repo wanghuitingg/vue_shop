@@ -1,0 +1,1 @@
+http://vueshop.pixiv.download/api/private/v1/
