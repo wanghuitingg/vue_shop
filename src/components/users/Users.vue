@@ -49,7 +49,8 @@
 						<!-- 分配权限 -->
 						<!-- 页面描述 -->
 						<el-tooltip class="item" effect="dark" content="分配权限" placement="top">
-							<el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+							<el-button type="warning" icon="el-icon-setting" size="mini" @click="setRole(scope.row)">
+							</el-button>
 						</el-tooltip>
 					</template>
 				</el-table-column>
@@ -110,6 +111,28 @@
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="editDialogVisible = false">取 消</el-button>
 				<el-button type="primary" @click="EditUserInfo">确 定</el-button>
+			</span>
+		</el-dialog>
+
+		<!-- “分配权限”对话框板块 -->
+		<el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="30%">
+			<div>
+				<p>当前的用户：{{userinfo.username}}</p>
+				<p>当前的角色：{{userinfo.role_name}}</p>
+				<p>分配新角色：
+					<!-- 为什么下拉框这  再我的select  需要一个v-model 呢  
+					   是因为 有很多个选项  但是  v-model 是记录你最后选择了哪个
+					   也就是说  我选择哪个  selectRoleId 就等于我:value="item.id"
+					   -->
+					<el-select v-model="selectRoleId" placeholder="请选择">
+						<el-option v-for="item in roleList" :key="item.id" :label="item.roleName" :value="item.id">
+						</el-option>
+					</el-select>
+				</p>
+			</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="setRightDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="saveRoleInfo">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>
@@ -207,6 +230,14 @@
 						trigger: 'blur'
 					}]
 				},
+
+				// 添加权限板块
+				setRightDialogVisible: false,
+				//定义一个变量 去绑定我接口返回的角色列表信息
+				roleList: [],
+				userinfo: {},
+				selectRoleId: ''
+
 			}
 		},
 		created() {
@@ -283,13 +314,42 @@
 				this.editForm = res.data;
 				this.editDialogVisible = true;
 			},
-			async EditUserInfo(){
-				const {data:res} = await this.$http.put(`users/${this.editForm.id}`,{email:this.editForm.email,mobile:this.editForm.mobile})
+			async EditUserInfo() {
+				const {
+					data: res
+				} = await this.$http.put(`users/${this.editForm.id}`, {
+					email: this.editForm.email,
+					mobile: this.editForm.mobile
+				})
 				// console.log(res)
-				if(res.meta.status!==200) return this.$message.error("编辑失败")
+				if (res.meta.status !== 200) return this.$message.error("编辑失败")
 				this.$message.success("编辑成功")
-				this.editDialogVisible=false;
+				this.editDialogVisible = false;
 				this.getUserList()
+			},
+			// 修改权限
+			async setRole(row) {
+				//查询我所有角色列表的信息
+				const {
+					data: res
+				} = await this.$http.get('roles');
+				console.log(JSON.parse(JSON.stringify(res)));
+				// console.log(Object.assign({},res))
+				this.roleList = res.data;
+				// 把当前传递过来的数据  绑定到我的userinfo上 
+				this.userinfo = row;
+				this.setRightDialogVisible = true;
+			},
+			async saveRoleInfo(){
+				//特殊处理  如果我下拉框没有选择 那么应该给用户提示
+				if(!this.selectRoleId) return  this.$message.error('请选择分配的角色！')
+				const {data:res} = await this.$http.put(`users/${this.userinfo.id}/role`,{rid:this.selectRoleId})
+				// console.log(res)
+				if(res.meta.status !== 200) return this.$message.error('修改角色失败')
+				this.$message.success('修改角色成功')
+				
+				this.getUserList()
+				this.setRightDialogVisible = false;
 			}
 		},
 	}

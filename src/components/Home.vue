@@ -13,15 +13,17 @@
 			<el-aside :width="isCollapse?'64px':'200px'">
 				<div class="toggle-button" @click="toggleCollapse">|||</div>
 				<el-menu class="el-menu-vertical-demo" background-color="#333744" text-color="#fff"
-					active-text-color="#409EFF" unique-opened :collapse="isCollapse" :collapse-transition="false"
-					router>
+					active-text-color="#409EFF" unique-opened :collapse="isCollapse" :collapse-transition="false" router
+					:default-active="activepath">
 					<!-- 这为什么要写key  因为规定这个唯一标识符 -->
 					<el-submenu :index="item.id+''" v-for="item in menulist" :key="item.id">
 						<template slot="title">
 							<i :class="iconsObj[item.id]"></i>
 							<span>{{item.authName}}</span>
 						</template>
-						<el-menu-item :index="'/'+subitem.path" v-for="subitem in item.children" :key="subitem.id">
+						<!-- 当我menu 开启路由模式的时候  menu会把index属性的值作为我跳转的地址 -->
+						<el-menu-item :index="'/'+subitem.path" v-for="subitem in item.children" :key="subitem.id"
+							@click="saveNavState('/'+subitem.path)">
 							<template slot="title">
 								<i class="el-icon-menu"></i>
 								<span>{{subitem.authName}}</span>
@@ -60,11 +62,15 @@
 				},
 				// 左侧菜单是否折叠
 				isCollapse: false,
+				activepath: ''
+
 			}
 		},
 		// 生命周期函数
 		created() {
 			this.getMenuList();
+			this.activepath = window.sessionStorage.getItem('activepath');
+
 		},
 		methods: {
 			logout() {
@@ -85,6 +91,12 @@
 			},
 			toggleCollapse() {
 				this.isCollapse = !this.isCollapse
+			},
+			saveNavState(activepath) {
+				// console.log(path)
+				// 我将把path 路径存储到我的session当中
+				window.sessionStorage.setItem('activepath', activepath);
+				this.activepath = activepath;
 			}
 		}
 	}
