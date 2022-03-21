@@ -24,6 +24,10 @@ axios.interceptors.request.use(config=>{
 	return config;
 })
 
+// 引入我的echarts 再全局进行引入
+import echarts from 'echarts'
+
+
 new Vue({
   router,
   render: h => h(App)
