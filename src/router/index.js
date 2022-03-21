@@ -4,26 +4,43 @@ import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Users from '../components/users/Users.vue'
 import Welcome from '../components/Welcome.vue'
+import Rights from '../components/rights/Rights.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
 	// 重定向操作
-	{path:'/',redirect:'/login'},
-	{path:'/login',component:Login},
 	{
-		path:'/home',
-		component:Home,
-		redirect:'/welcome',
-		children:[
-			{path:'/users',component:Users},
-			{path:'/welcome',component:Welcome},
+		path: '/',
+		redirect: '/login'
+	},
+	{
+		path: '/login',
+		component: Login
+	},
+	{
+		path: '/home',
+		component: Home,
+		redirect: '/welcome',
+		children: [{
+				path: '/users',
+				component: Users
+			},
+			{
+				path: '/welcome',
+				component: Welcome
+			},
+			{
+				path: '/rights',
+				component: Rights
+			},
 		]
-		}
+	},
+
 ]
 
 const router = new VueRouter({
-  routes
+	routes
 })
 
 //路由守卫

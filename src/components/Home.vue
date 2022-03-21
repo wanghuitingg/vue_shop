@@ -94,7 +94,8 @@
 			},
 			saveNavState(activepath) {
 				// console.log(path)
-				// 我将把path 路径存储到我的session当中
+				// 错误点  每次页面刷新的时候  我的activepath  都是空的
+				// 我就在我的生命周期函数当中  直接给我的activepath 进行赋值  我的值就是从我的session当中获取的
 				window.sessionStorage.setItem('activepath', activepath);
 				this.activepath = activepath;
 			}
