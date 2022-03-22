@@ -18,7 +18,36 @@
 
 			<!-- 表单 -->
 			<el-table :data="roleList" stripe border="">
-				<el-table-column type="expand"></el-table-column>
+				<!-- 下拉框 -->
+				<el-table-column type="expand">
+					<template slot-scope="scope">
+						<!-- 思路:每一个children  都针对的是我一个级别  一三三级
+						我使用模板插槽 把当前这条数据传递过来了-->
+						<el-row v-for="(item1,i1) in scope.row.children" :key="item1.id"
+							:class="['bdbottom',i1 === 0?'bdtop':'','vcenter']">
+							<el-col :span="5">
+								<!-- 第一级 -->
+								<el-tag closable type="danger">{{item1.authName}}</el-tag>
+								<i class="el-icon-caret-right"></i>
+							</el-col>
+							<el-col :span="19">
+								<el-row v-for="(item2,i2) in item1.children" :key="item2.id"
+									:class="['bdbottom',i2 === 0?'':'bdtop','vcenter']">
+									<el-col :span="6">
+										<!-- 第二级 -->
+										<el-tag closable type="success">{{item2.authName}}</el-tag>
+										<i class="el-icon-caret-right"></i>
+									</el-col>
+									<el-col :span="18">
+										<!-- 第三级 -->
+										<el-tag type="warning" closable v-for="(item3,i3) in item2.children"
+											:key="item3.id" @close="removeRightById(scope.row,item3.id)">{{item3.authName}}</el-tag>
+									</el-col>
+								</el-row>
+							</el-col>
+						</el-row>
+					</template>
+				</el-table-column>
 				<el-table-column type="index" label="#">
 				</el-table-column>
 				<el-table-column prop="roleName" label="角色名称">
@@ -194,11 +223,37 @@
 				this.$message.success('更改成功');
 				this.editDialogVisible = false;
 				this.getRoleList();
+			},
+			async removeRightById(row,rightid){
+				// console.log(row,rightId)
+				const {data:res} = await this.$http.delete(`roles/${row.id}/rights/${rightid}`)
+				if(res.meta.status!==200) return this.$message.error('删除失败')
+				this.$message.success('删除成功')
+				// this.getRoleList();
+				// 免刷新，直接重新赋值
+				row.children = res.data;
 			}
+			
 
 		}
 	}
 </script>
 
 <style lang="less" scoped>
+	.el-tag {
+		margin: 7px;
+	}
+
+	.bdtop {
+		border-top: 1px solid #eee;
+	}
+
+	.bdbottom {
+		border-bottom: 1px solid #eee;
+	}
+
+	.vcenter {
+		display: flex;
+		align-items: center;
+	}
 </style>
