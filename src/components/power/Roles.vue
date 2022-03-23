@@ -41,7 +41,9 @@
 									<el-col :span="18">
 										<!-- 第三级 -->
 										<el-tag type="warning" closable v-for="(item3,i3) in item2.children"
-											:key="item3.id" @close="removeRightById(scope.row,item3.id)">{{item3.authName}}</el-tag>
+											:key="item3.id" @close="removeRightById(scope.row,item3.id)">
+											{{item3.authName}}
+										</el-tag>
 									</el-col>
 								</el-row>
 							</el-col>
@@ -61,7 +63,8 @@
 							编辑</el-button>
 						<el-button type="danger" icon="el-icon-delete" size="mini" @click="RoleDelete(scope.row.id)">删除
 						</el-button>
-						<el-button type="warning" icon="el-icon-share" size="mini">分配权限</el-button>
+						<el-button type="warning" icon="el-icon-share" size="mini"
+							@click="showSetRightDialog(scope.row)">分配权限</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -100,6 +103,20 @@
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="editDialogVisible = false">取 消</el-button>
 				<el-button type="primary" @click="EditRolesInfo">确 定</el-button>
+			</span>
+		</el-dialog>
+
+		<!-- 分配权限对话框 -->
+		<el-dialog title="分配权限" :visible.sync="setRightDialogVisible" width="40%" :before-close="handleClose">
+			<span>
+				<el-tree :data="rightsList" show-checkbox node-key="id" default-expand-all
+					:default-checked-keys="defKeys" ref="treeRef" :props="treePorps">
+					<!-- :props 是el-treee 需要读取的配置项 -->
+				</el-tree>
+			</span>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="setRightDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="allotRights">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>
@@ -171,6 +188,16 @@
 					]
 				},
 				editDialogVisible: false,
+				setRightDialogVisible: false,
+				rightsList: [],
+				treePorps: {
+					//规定好的  label就相当于咱们的文字部分
+					label: 'authName',
+					//你的子集是哪一个字段  咱们的子级是哪个数据项
+					children: 'children'
+				},
+				defKeys: [],
+				roleid: ''
 			}
 		},
 		created() {
@@ -224,16 +251,61 @@
 				this.editDialogVisible = false;
 				this.getRoleList();
 			},
-			async removeRightById(row,rightid){
+			async removeRightById(row, rightid) {
 				// console.log(row,rightId)
-				const {data:res} = await this.$http.delete(`roles/${row.id}/rights/${rightid}`)
-				if(res.meta.status!==200) return this.$message.error('删除失败')
+				const {
+					data: res
+				} = await this.$http.delete(`roles/${row.id}/rights/${rightid}`)
+				if (res.meta.status !== 200) return this.$message.error('删除失败')
 				this.$message.success('删除成功')
 				// this.getRoleList();
 				// 免刷新，直接重新赋值
 				row.children = res.data;
+			},
+			async showSetRightDialog(row){
+				this.roleid = row.id;
+			 	const {data:res} = await this.$http.get('rights/tree');
+				// console.log(res);
+				// 把我从服务器接口请求回来的数据  绑定到我的data层当中 作为数据源进行使用
+				if(res.meta.status!==200) return this.$message.error('获取失败');
+				this.rightsList = res.data;
+				this.getLeafKeys(row,this.defKeys);
+				this.setRightDialogVisible=true;
+			},
+			//封装  方便以后继续使用
+			//通过递归的方式进行defKeys的赋值操作 是只允许有第三级权限
+			getLeafKeys(node,arr){
+				// 如果没有children属性  那么他肯定是第三级选项
+				if(!node.children){
+					return arr.push(node.id);
+				}
+				//如果是第一级  和第二级的选项  那么他自己调用自身  往下继续找
+				node.children.forEach(item=>this.getLeafKeys(item,arr));
+			},
+
+			async allotRights(){
+				// [1,2,3]  把数组分割成字符换 "1,2,3"
+				// 用... 进行省略  意思在这有可能会出现非常多的元素
+				 const keys = [
+				   ...this.$refs.treeRef.getCheckedKeys(),
+				   ...this.$refs.treeRef.getHalfCheckedKeys()
+				 ]
+				//console.log(this.$refs.treeRef.getCheckedKeys());
+				//console.log(this.$refs.treeRef.getHalfCheckedKeys());
+				//转化成字符串格式
+				const idStr = keys.join(',');
+				
+				const {data:res} = await this.$http.post(`roles/${this.roleid}/rights`,{rids:idStr});
+				
+				if(res.meta.status!==200) return this.$message.error('更新失败');
+				this.$message.success('更新权限成功');
+				this.getRoleList();
+				this.setRightDialogVisible=false;
+			},
+			handleClose(){
+				//函数相当于  在我dialog对话框  关闭之前所调用的函数
+				this.defKeys=[];
 			}
-			
 
 		}
 	}
