@@ -1,5 +1,33 @@
 <template>
 	<div>
+		<!-- 
+				 知识点总结
+				 vue  过滤器重点Vue.filter 含义: 把我的数据 去做成我想要的格式）
+				 你在项目当中 哪点使用过vue的过滤器  处理时间戳的时候进行使用  订单板块
+				 
+				 新的elementui的组件
+				 <el-timeline :reverse="true">
+				   <el-timeline-item
+				     v-for="(activity, index) in progressInfo"
+				     :key="index"
+				     :timestamp="activity.time">
+				     {{ activity.context }}
+				   </el-timeline-item>
+				 </el-timeline>
+				 progressInfo  数据源  :timestamp  就指定的是我数据源当中的时间戳
+				 {{ activity.context }} 指定的是我的内容
+				 
+				 import cityData from '../../utils/citydata'  引入我全国省市区的json数据
+				 
+				 在我的data层当中进行的赋值操作
+				 cityData: cityData,  然后完成的双向数据绑定
+				 
+				 :props="cityProps"  本身指定的是点击才出现的下一级  还是滑动出现的下一级
+				 动态属性的方式去读取的
+				 
+				 
+				 -->
+
 		<!-- 面包屑导航 -->
 		<el-breadcrumb separator-class="el-icon-arrow-right">
 			<el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
@@ -49,7 +77,11 @@
 					</template>
 				</el-table-column>
 			</el-table>
-
+			<!-- 分页 -->
+			<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+				:current-page="queryInfo.pagenum" :page-sizes="[10, 20, 30, 40]" :page-size="queryInfo.pagesize"
+				layout="total, sizes, prev, pager, next, jumper" :total="total">
+			</el-pagination>
 		</el-card>
 
 		<!-- 修改地址的 dialog对话框 -->
@@ -204,7 +236,16 @@
 				this.progressVisible = true;
 
 			},
-
+			handleSizeChange(newSize) {
+				// 我newsize  就是我点击之后的这个最新值  然后我给queryinfo 里面pagesize从新赋值
+				this.queryInfo.pagesize = newSize
+				this.getOrdersList()
+			},
+			handleCurrentChange(newPage) {
+				// 从新赋值 从新请求 完成分页
+				this.queryInfo.pagenum = newPage
+				this.getOrdersList()
+			}
 		}
 	}
 </script>
