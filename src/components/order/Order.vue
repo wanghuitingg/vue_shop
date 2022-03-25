@@ -129,7 +129,7 @@
 		data() {
 			return {
 				queryInfo: {
-					query: '',
+					query: "",
 					pagenum: 1,
 					pagesize: 10
 				},

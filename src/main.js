@@ -16,6 +16,10 @@ axios.defaults.baseURL='http://vueshop.pixiv.download/api/private/v1/'
 // 3.把我的axios挂载到Vue原型上
 Vue.prototype.$http = axios
 
+import TreeTable from 'vue-table-with-tree-grid'
+// 并且注册成一个组件
+Vue.component('tree-table',TreeTable)
+
 // 在main.js 当中  去定义我的过滤器  （含义: 把我的数据 去做成我想要的格式）
 // dateFormat 这是咱们定义的过滤器的函数名
 Vue.filter('dateFormat', function (originVal) {
