@@ -10,6 +10,7 @@ import Echarts from '../components/echart/echarts.vue'
 import Order from '../components/order/Order.vue'
 import Cate from '../components/goods/cate.vue'
 import Params from '../components/goods/params.vue'
+import List from '../components/goods/List.vue'
 
 Vue.use(VueRouter)
 
@@ -58,6 +59,10 @@ const routes = [
 			{
 				path: '/params',
 				component: Params
+			},
+			{
+				path: '/goods',
+				component: List
 			},
 		]
 	},
