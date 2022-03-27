@@ -9,7 +9,7 @@ import Roles from '../components/power/Roles.vue'
 import Echarts from '../components/echart/echarts.vue'
 import Order from '../components/order/Order.vue'
 import Cate from '../components/goods/cate.vue'
-import Params from '../components/goods/param.vue'
+import Params from '../components/goods/params.vue'
 
 Vue.use(VueRouter)
 
