@@ -41,8 +41,8 @@
 			<!-- 搜索框区域 -->
 			<el-row>
 				<el-col :span="8">
-					<el-input placeholder="请输入内容" v-model="queryInfo.query">
-						<el-button slot="append" icon="el-icon-search" @click="getOrdersList()"></el-button>
+					<el-input placeholder="请输入内容" v-model="queryInfo.query" @clear="getOrdersList" clearable>
+						<el-button slot="append" icon="el-icon-search" @click="getOrdersList "></el-button>
 					</el-input>
 				</el-col>
 			</el-row>
@@ -161,6 +161,7 @@
 				});
 				console.log(res)
 				if (res.meta.status !== 200) return this.$message.error('请求接口失败');
+				this.$message.success('请求成功')
 				//请求接口成功的情况  我需要把res里面的data  赋值给我的数据层
 				this.orderList = res.data.goods;
 				this.total = res.data.total;
