@@ -60,7 +60,13 @@
 							<el-input v-model="item.attr_vals"></el-input>
 						</el-form-item>
 					</el-tab-pane>
-					<el-tab-pane label="商品图片" name="3">商品图片</el-tab-pane>
+					<el-tab-pane label="商品图片" name="3">
+						<el-upload :action="uploadURL" :on-remove="handleRemove" :headers="headerObj"
+							:on-success="handleSuccess" list-type="picture">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+						</el-upload>
+					</el-tab-pane>
 					<el-tab-pane label="商品内容" name="4">商品内容</el-tab-pane>
 				</el-tabs>
 			</el-form>
@@ -79,6 +85,9 @@
 					goods_weight: 0,
 					goods_number: 0,
 					goods_cat: [],
+					pics: [],
+					goods_introduce: '',
+					attrs: []
 				},
 				addFormRules: {
 					goods_name: [{
@@ -115,7 +124,11 @@
 					children: 'children'
 				},
 				manyTableData: [],
-				onlyTableData: []
+				onlyTableData: [],
+				headerObj: {
+					Authorization: window.sessionStorage.getItem('token')
+				},
+				uploadURL: 'http://vueshop.pixiv.download/api/private/v1/upload',
 			}
 		},
 		created() {
@@ -189,7 +202,24 @@
 
 					this.onlyTableData = res.data
 				}
-
+			},
+			handleRemove(file) {
+				console.log(file);
+				const filePath = file.response.data.tmp_path
+				// 2.从pics数组中, 找到这个图片对应的索引值
+				const index = this.addForm.pics.findIndex(item => {
+					return item.pic === filePath
+				})
+				// 3.调用数组的splice方法, 把图片信息对象, 从pics数组中移除
+				this.addForm.pics.splice(index, 1)
+			},
+			handleSuccess(response) {
+				// 传递的参数  自带的参数  服务器反馈回来的结果集
+				const picInfo = {
+					pic: response.data.tmp_path
+				}
+				// 2.将图片信息对象, push到 pics数组中
+				this.addForm.pics.push(picInfo)
 			}
 		}
 	}
