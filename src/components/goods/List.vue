@@ -18,7 +18,8 @@
 					</el-input>
 				</el-col>
 				<el-col :span="4">
-					<el-button type="primary">添加商品</el-button>
+					<!-- 和以往咱们用dialog  不同 这是直接跳转到其他组件当中了 -->
+					<el-button type="primary" @click="goAddpage">添加商品</el-button>
 				</el-col>
 			</el-row>
 
@@ -110,6 +111,10 @@
 				if(res.meta.status!==200) return this.$message.error('删除信息失败')
 				this.$message.success('删除信息成功')
 				this.getGoodsList()
+			},
+			goAddpage(){
+				// 编程式导航  一定要用 this.$router.push('即将跳转的路由地址')
+				this.$router.push('/goods/add')
 			}
 		}
 	}
