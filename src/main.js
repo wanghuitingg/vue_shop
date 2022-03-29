@@ -20,6 +20,14 @@ import TreeTable from 'vue-table-with-tree-grid'
 // 并且注册成一个组件
 Vue.component('tree-table',TreeTable)
 
+// 导入富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+// 导入富文本编辑器对应的样式
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+Vue.use(VueQuillEditor)
+
 // 在main.js 当中  去定义我的过滤器  （含义: 把我的数据 去做成我想要的格式）
 // dateFormat 这是咱们定义的过滤器的函数名
 Vue.filter('dateFormat', function (originVal) {

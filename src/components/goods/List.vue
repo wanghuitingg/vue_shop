@@ -49,11 +49,13 @@
 					<template slot-scope="scope">
 						<!-- 编辑按钮 -->
 						<el-tooltip class="item" effect="dark" content="编辑商品信息" placement="top">
-							<el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+							<el-button type="primary" icon="el-icon-edit" size="mini"
+								@click="editGoodsById(scope.row.goods_id)"></el-button>
 						</el-tooltip>
 						<!-- 删除按钮 -->
 						<el-tooltip class="item" effect="dark" content="删除商品" placement="top">
-							<el-button type="danger" icon="el-icon-delete" size="mini" @click="removeGoodsById(scope.row.goods_id)"></el-button>
+							<el-button type="danger" icon="el-icon-delete" size="mini"
+								@click="removeGoodsById(scope.row.goods_id)"></el-button>
 						</el-tooltip>
 					</template>
 				</el-table-column>
@@ -105,16 +107,26 @@
 				this.queryInfo.pagenum = newPage;
 				this.getGoodsList();
 			},
-			async removeGoodsById(id){
-				const {data:res} = await this.$http.delete(`goods/${id}`)
+			async removeGoodsById(id) {
+				const {
+					data: res
+				} = await this.$http.delete(`goods/${id}`)
 				// console.log(res)
-				if(res.meta.status!==200) return this.$message.error('删除信息失败')
+				if (res.meta.status !== 200) return this.$message.error('删除信息失败')
 				this.$message.success('删除信息成功')
 				this.getGoodsList()
 			},
-			goAddpage(){
+			goAddpage() {
 				// 编程式导航  一定要用 this.$router.push('即将跳转的路由地址')
 				this.$router.push('/goods/add')
+			},
+			editGoodsById(id) {
+				this.$router.push({
+					path: '/goods/edit',
+					query: {
+						goodsid: id
+					}
+				});
 			}
 		}
 	}

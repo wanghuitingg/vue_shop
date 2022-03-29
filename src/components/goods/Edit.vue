@@ -1,11 +1,10 @@
-<!-- 添加商品组件 -->
 <template>
 	<div>
 		<!-- 面包屑导航 -->
 		<el-breadcrumb separator-class="el-icon-arrow-right">
 			<el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
 			<el-breadcrumb-item>商品管理</el-breadcrumb-item>
-			<el-breadcrumb-item>添加商品</el-breadcrumb-item>
+			<el-breadcrumb-item>修改商品</el-breadcrumb-item>
 		</el-breadcrumb>
 
 		<!-- 卡片视图区域 -->
@@ -48,6 +47,7 @@
 									<el-cascader v-model="addForm.goods_cat" :options="cateList" :props="cateProps"
 										clearable @change="handleChange">
 									</el-cascader>
+									<span>再次选择 会更改商品分类 如果不选择 那么默认当前分类</span>
 								</el-col>
 							</el-row>
 						</el-form-item>
@@ -76,7 +76,7 @@
 						<!-- 富文本编辑器的地方 -->
 						<quill-editor v-model="addForm.goods_introduce">
 						</quill-editor>
-						<el-button class="btnAdd" type="primary" @click="add">添加商品</el-button>
+						<el-button class="btnAdd" type="primary" @click="edit">修改商品</el-button>
 					</el-tab-pane>
 				</el-tabs>
 			</el-form>
@@ -114,8 +114,8 @@
 						message: '请输入商品价格',
 						trigger: 'blur'
 					}],
-					goods_weight: [
-					{required: true,
+					goods_weight: [{
+						required: true,
 						message: '请输入商品重量',
 						trigger: 'blur'
 					}],
@@ -146,6 +146,7 @@
 			}
 		},
 		created() {
+			this.getData();
 			this.getCateList();
 		},
 		computed: {
@@ -157,6 +158,18 @@
 			}
 		},
 		methods: {
+			async getData() {
+				const id = this.$route.query.goodsid;
+				// console.log(id);
+				const {
+					data: res
+				} = await this.$http.get(`goods/${id}`);
+				// console.log(res);
+				//  我把goods_cat 进行分割
+				res.data.goods_cat = res.data.goods_cat.split(',');
+
+				this.addForm = res.data;
+			},
 			async getCateList() {
 				const {
 					data: res
@@ -234,7 +247,7 @@
 				this.addForm.pics.push(picInfo)
 			},
 			// 添加商品的事件
-			async add() {
+			async edit() {
 				// 叫表单预验证 当我输入的东西和我本身的验证规则 不符合的时候  我valid 自动为false
 				this.$refs.addFormRef.validate(async valid => {
 					// 当我的valid 为false的时候 就证明我有没写的表单
@@ -267,10 +280,11 @@
 					form.attrs = this.addForm.attrs;
 					const {
 						data: res
-					} = await this.$http.post('goods', form);
-					if (res.meta.status !== 201) return this.$message.error('添加商品失败');
+					} = await this.$http.put(`goods/${this.$route.query.goodsid}`, form);
+					console.log(res)
+					if (res.meta.status !== 200) return this.$message.error('添加商品失败');
 					//添加商品成功
-					this.$message.success('添加商品成功');
+					this.$message.success('修改商品成功');
 					// 编程导航
 					this.$router.push('/goods')
 				})
@@ -279,33 +293,5 @@
 	}
 </script>
 
-<!-- vue 富文本编辑器的使用 -->
-<!-- 命令行先安装富文本编辑器 -->
-<!-- 
-安装富文本编辑器
- npm install vue-quill-editor --save
- 安装富文本编辑器所使用的依赖
- npm install quill --save
- 
- 
- 再mian.js 当中进行全局导入
- // 导入富文本编辑器
- import VueQuillEditor from 'vue-quill-editor'
- // 导入富文本编辑器对应的样式
- import 'quill/dist/quill.core.css'
- import 'quill/dist/quill.snow.css'
- import 'quill/dist/quill.bubble.css'
- Vue.use(VueQuillEditor)
- 
- 
- -->
-
 <style lang="less" scoped>
-	.el-steps {
-		margin-top: 10px;
-	}
-
-	.el-tabs {
-		margin-top: 10px;
-	}
 </style>
