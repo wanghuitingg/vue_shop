@@ -22,8 +22,8 @@
 							<span>{{item.authName}}</span>
 						</template>
 						<!-- 当我menu 开启路由模式的时候  menu会把index属性的值作为我跳转的地址 -->
-						<el-menu-item :index="'/'+subitem.path" v-for="subitem in item.children" :key="subitem.id"
-							@click="saveNavState('/'+subitem.path)">
+						<el-menu-item :index="'/'+subitem.path" v-for="subitem in item.children" 
+						:key="subitem.id" @click="saveNavState('/'+subitem.path)">
 							<template slot="title">
 								<i class="el-icon-menu"></i>
 								<span>{{subitem.authName}}</span>
