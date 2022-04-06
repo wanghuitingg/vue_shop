@@ -4,7 +4,7 @@
 		<div class="login_box">
 			<!-- 头像框 -->
 			<div class="avatar_box">
-				<img src="../assets/logo.png" alt="">
+				<img src="../assets/rice.png" alt="">
 			</div>
 			<!-- 用户密码及按钮 ref属性代表整个表单的对象-->
 			<el-form label-width="0px" class="login_form" :rules="LoginFormRules" :model="LoginForm" ref="LoginFormRef">
