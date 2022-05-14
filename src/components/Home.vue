@@ -3,7 +3,7 @@
 		<el-header>
 			<div>
 				<img src="../assets/rice.png" alt="">
-				<span>饭否后台管理系统</span>
+				<span>饭否食堂后台管理系统</span>
 			</div>
 			<el-button type="info" @click="logout">退出</el-button>
 		</el-header>
